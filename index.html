@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="bn">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CreativeGameworld - জয় রাধা কৃষ্ণন!</title>
+    <title>CreativeGameworld - Jai Radhe Krishnan!</title>
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
@@ -16,13 +16,18 @@
             padding: 0;
             display: flex;
             flex-direction: column;
-            min-height: 100vh;
+            min-height: 100vh; /* Ensure full height */
+            overflow-x: hidden; /* Prevent horizontal scroll */
         }
-        .container {
+        .main-container {
             max-width: 1200px;
+            width: 100%; /* Ensure it takes full width */
             margin: 0 auto;
             padding: 1rem;
             flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
         }
         .game-window {
             background-color: #2d3748; /* Darker background for windows */
@@ -32,21 +37,23 @@
             align-items: center;
             justify-content: center;
             flex-direction: column;
-            height: 200px;
+            height: 200px; /* Fixed height for consistent grid */
             transition: transform 0.2s;
             cursor: pointer;
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            text-align: center;
         }
         .game-window:hover {
             transform: translateY(-5px);
         }
+
         /* Ludo specific styles */
         .ludo-board {
             display: grid;
             grid-template-columns: repeat(15, 1fr); /* 15x15 grid for Ludo */
             grid-template-rows: repeat(15, 1fr);
-            width: clamp(280px, 90vw, 600px); /* Responsive width */
-            height: clamp(280px, 90vw, 600px); /* Responsive height */
+            width: clamp(300px, 90vw, 600px); /* Responsive width */
+            height: clamp(300px, 90vw, 600px); /* Responsive height */
             background-color: #f7fafc; /* White board background */
             border-radius: 10px;
             overflow: hidden;
@@ -65,54 +72,61 @@
             justify-content: center;
             font-size: 0.75rem;
             color: #2d3748;
+            position: relative; /* For positioning pieces */
         }
 
         /* Ludo Home Bases */
-        .ludo-home-red { grid-area: 1 / 1 / 7 / 7; background-color: #e53e3e; border-color: #c53030; display: flex; justify-content: center; align-items: center; }
-        .ludo-home-green { grid-area: 1 / 10 / 7 / 16; background-color: #38a169; border-color: #2f855a; display: flex; justify-content: center; align-items: center; }
-        .ludo-home-yellow { grid-area: 10 / 1 / 16 / 7; background-color: #d69e2e; border-color: #b7791f; display: flex; justify-content: center; align-items: center; }
-        .ludo-home-blue { grid-area: 10 / 10 / 16 / 16; background-color: #4299e1; border-color: #3182ce; display: flex; justify-content: center; align-items: center; }
+        .ludo-home-red { grid-area: 1 / 1 / 7 / 7; background-color: #e53e3e; border-color: #c53030; display: flex; flex-wrap: wrap; justify-content: center; align-items: center; }
+        .ludo-home-green { grid-area: 1 / 10 / 7 / 16; background-color: #38a169; border-color: #2f855a; display: flex; flex-wrap: wrap; justify-content: center; align-items: center; }
+        .ludo-home-yellow { grid-area: 10 / 1 / 16 / 7; background-color: #d69e2e; border-color: #b7791f; display: flex; flex-wrap: wrap; justify-content: center; align-items: center; }
+        .ludo-home-blue { grid-area: 10 / 10 / 16 / 16; background-color: #4299e1; border-color: #3182ce; display: flex; flex-wrap: wrap; justify-content: center; align-items: center; }
 
         /* Ludo Center Area */
-        .ludo-center { grid-area: 7 / 7 / 10 / 10; background-color: #a0aec0; display: flex; justify-content: center; align-items: center; font-weight: bold; }
+        .ludo-center { grid-area: 7 / 7 / 10 / 10; background-color: #a0aec0; display: flex; justify-content: center; align-items: center; font-weight: bold; font-size: 1.2rem;}
 
-        /* Path cells - simplified representation */
-        /* Red Path */
-        .ludo-cell.path-red-start { background-color: #e53e3e; }
-        .ludo-cell.path-red-safe { background-color: #fed7d7; }
+        /* Path cells - specific colors */
+        .ludo-cell.red-path { background-color: #fca5a5; }
+        .ludo-cell.green-path { background-color: #bbf7d0; }
+        .ludo-cell.yellow-path { background-color: #fde68a; }
+        .ludo-cell.blue-path { background-color: #bfdbfe; }
 
-        /* Green Path */
-        .ludo-cell.path-green-start { background-color: #38a169; }
-        .ludo-cell.path-green-safe { background-color: #c6f6d5; }
+        /* Star cells */
+        .ludo-cell.star { background-color: #a78bfa; color: white; font-weight: bold; }
 
-        /* Yellow Path */
-        .ludo-cell.path-yellow-start { background-color: #d69e2e; }
-        .ludo-cell.path-yellow-safe { background-color: #feebc8; }
+        /* Safe cells (entry to home run) */
+        .ludo-cell.safe-red { background-color: #ef4444; }
+        .ludo-cell.safe-green { background-color: #22c55e; }
+        .ludo-cell.safe-yellow { background-color: #eab308; }
+        .ludo-cell.safe-blue { background-color: #3b82f6; }
 
-        /* Blue Path */
-        .ludo-cell.path-blue-start { background-color: #4299e1; }
-        .ludo-cell.path-blue-safe { background-color: #bee3f8; }
 
         .ludo-piece {
             width: 70%;
             height: 70%;
             border-radius: 50%;
             border: 2px solid #000;
-            position: absolute; /* Will be positioned absolutely inside board */
             display: flex;
             align-items: center;
             justify-content: center;
             font-size: 0.8rem;
             font-weight: bold;
             color: white;
-            cursor: pointer;
+            cursor: grab;
             transition: all 0.3s ease-in-out;
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+            z-index: 10; /* Ensure pieces are above cells */
         }
         .ludo-piece.red { background-color: #e53e3e; }
         .ludo-piece.green { background-color: #38a169; }
         .ludo-piece.yellow { background-color: #d69e2e; }
         .ludo-piece.blue { background-color: #4299e1; }
+        /* Position pieces within home base */
+        .ludo-home-red .ludo-piece, .ludo-home-green .ludo-piece,
+        .ludo-home-yellow .ludo-piece, .ludo-home-blue .ludo-piece {
+            width: 45%; /* Smaller inside home */
+            height: 45%;
+            margin: 2px;
+        }
 
         .dice-display {
             font-size: 3rem;
@@ -152,263 +166,227 @@
             transform: translateY(0);
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
         }
+
+        /* Modal/Page styles */
+        .page-content {
+            width: 100%;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 1rem;
+        }
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.75);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 50;
+            overflow-y: auto;
+            padding: 1rem;
+        }
+        .modal-content {
+            background-color: #2d3748;
+            padding: 2rem;
+            border-radius: 10px;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+            position: relative;
+            max-width: 800px;
+            width: 100%;
+        }
+        .close-button {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            background: none;
+            border: none;
+            font-size: 2rem;
+            color: #cbd5e0;
+            cursor: pointer;
+            transition: color 0.2s;
+        }
+        .close-button:hover {
+            color: #e2e8f0;
+        }
     </style>
 </head>
 <body class="bg-gray-900 text-gray-100">
-    <div class="container flex flex-col items-center">
-        <!-- Website Logo Placeholder -->
-        <div id="website-logo-placeholder" class="w-24 h-24 bg-gray-700 rounded-full flex items-center justify-center text-gray-400 text-sm mb-4">
-            <span class="text-center">লোগো<br>এখানে</span>
+    <div class="main-container">
+        <!-- Static Header -->
+        <header class="w-full text-center py-6">
+            <!-- Website Logo Placeholder -->
+            <div id="website-logo-placeholder" class="w-24 h-24 bg-gray-700 rounded-full mx-auto mb-4 flex items-center justify-center text-gray-400 text-sm">
+                <span class="text-center">Logo<br>Here</span>
+            </div>
+            <!-- Website Name & Welcome Message -->
+            <h1 class="text-5xl font-bold text-blue-400 mb-2">CreativeGameworld</h1>
+            <p class="text-2xl font-semibold mb-8 text-yellow-300">Jai Radhe Krishnan!</p>
+        </header>
+
+        <!-- Main Content Area - This will be dynamically updated for different pages -->
+        <div id="app-content" class="w-full flex flex-col items-center flex-grow">
+            <!-- Initial Home Page Content will be loaded here by JavaScript -->
         </div>
 
-        <!-- Website Name & Welcome Message -->
-        <h1 class="text-5xl font-bold text-blue-400 mb-2">CreativeGameworld</h1>
-        <p class="text-2xl font-semibold mb-8 text-yellow-300">জয় রাধা কৃষ্ণন!</p>
-
-        <!-- Profile Section -->
-        <div class="bg-gray-800 p-6 rounded-lg shadow-lg text-center mb-10 w-full max-w-sm">
-            <div id="profile-picture-placeholder" class="w-32 h-32 bg-gray-700 rounded-full mx-auto mb-4 flex items-center justify-center text-gray-400 text-lg">
-                <span class="text-center">প্রোফাইল<br>ছবি</span>
+        <!-- Footer -->
+        <footer class="bg-gray-800 p-6 text-center text-gray-400 text-sm mt-auto w-full">
+            <p>&copy; 2025 CreativeGameworld. All rights reserved.</p>
+            <div class="mt-2">
+                <a href="#" id="privacy-policy-link" class="text-blue-400 hover:underline mx-2">Privacy Policy</a>
+                <a href="#" id="community-guidelines-link" class="text-blue-400 hover:underline mx-2">Community Guidelines</a>
             </div>
-            <h2 class="text-xl font-bold text-white mb-2">আপনার নাম (বস)</h2>
-            <p class="text-md text-gray-400">খেলার জন্য প্রস্তুত!</p>
-        </div>
-
-        <!-- Game Windows Section -->
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 w-full mb-10">
-            <!-- Ludo Window (Already Built) -->
-            <div class="game-window">
-                <span class="text-3xl mb-2">🎲</span>
-                <h3 class="text-xl font-semibold">লুডো</h3>
-                <p class="text-sm text-gray-400">এক্ষুনি খেলুন!</p>
-            </div>
-            <!-- Other Game Windows (Placeholders) -->
-            <div class="game-window">
-                <span class="text-3xl mb-2">🏃‍♂️</span>
-                <h3 class="text-xl font-semibold">সাবওয়ে রানার</h3>
-                <p class="text-sm text-gray-400">শীঘ্রই আসছে...</p>
-            </div>
-            <div class="game-window">
-                <span class="text-3xl mb-2">♟️</span>
-                <h3 class="text-xl font-semibold">চেস</h3>
-                <p class="text-sm text-gray-400">শীঘ্রই আসছে...</p>
-            </div>
-            <div class="game-window">
-                <span class="text-3xl mb-2">⛏️</span>
-                <h3 class="text-xl font-semibold">মাইনক্রাফট প্রোটোটাইপ</h3>
-                <p class="text-sm text-gray-400">শীঘ্রই আসছে...</p>
-            </div>
-        </div>
-
-        <!-- Main Ludo Game Area -->
-        <div id="ludo-game-section" class="bg-gray-800 p-8 rounded-lg shadow-xl w-full max-w-4xl flex flex-col items-center mb-10">
-            <h2 class="text-3xl font-bold text-white mb-6">লুডো খেলুন!</h2>
-            <div class="ludo-board">
-                <!-- Ludo Home Bases -->
-                <div class="ludo-home-red"></div>
-                <div class="ludo-home-green"></div>
-                <div class="ludo-home-yellow"></div>
-                <div class="ludo-home-blue"></div>
-                <!-- Center Area -->
-                <div class="ludo-center">ফিনিশ</div>
-                <!-- Path cells (simplified - real Ludo has specific paths) -->
-                <!-- Example Path Cells - will need full grid for actual game -->
-                <!-- Cells for Ludo path - simplified for visual only -->
-                <!-- Row 7 (main horizontal path) -->
-                <div class="ludo-cell path-red-start" style="grid-area: 7 / 2 / 8 / 3;"></div>
-                <div class="ludo-cell" style="grid-area: 7 / 3 / 8 / 4;"></div>
-                <div class="ludo-cell" style="grid-area: 7 / 4 / 8 / 5;"></div>
-                <div class="ludo-cell" style="grid-area: 7 / 5 / 8 / 6;"></div>
-                <div class="ludo-cell" style="grid-area: 7 / 6 / 8 / 7;"></div>
-                <div class="ludo-cell path-green-safe" style="grid-area: 2 / 7 / 3 / 8;"></div>
-                <!-- ... many more path cells ... -->
-            </div>
-
-            <!-- Dice Roll and Piece Selection -->
-            <div class="flex flex-col items-center mt-6">
-                <div class="dice-display text-white mb-4">
-                    <span id="dice-value">১</span>
-                </div>
-                <button id="roll-dice-button" class="ludo-button text-xl">
-                    <span class="mr-2">⚪</span> এন্টার ইওর গুটি
-                </button>
-
-                <div id="piece-selection-area" class="mt-8 flex flex-wrap justify-center gap-4 hidden">
-                    <p class="w-full text-center mb-2 text-lg">কোন গুটি চালাবেন?</p>
-                    <button class="ludo-button ludo-piece-select-btn red" data-piece="red-1">রেড ১</button>
-                    <button class="ludo-button ludo-piece-select-btn red" data-piece="red-2">রেড ২</button>
-                    <button class="ludo-button ludo-piece-select-btn red" data-piece="red-3">রেড ৩</button>
-                    <button class="ludo-button ludo-piece-select-btn red" data-piece="red-4">রেড ৪</button>
-                </div>
-            </div>
-        </div>
+        </footer>
     </div>
-
-    <!-- Footer -->
-    <footer class="bg-gray-800 p-6 text-center text-gray-400 text-sm mt-auto">
-        <p>&copy; ২০২৫ CreativeGameworld. সকল স্বত্ব সংরক্ষিত।</p>
-        <div class="mt-2">
-            <a href="#" id="privacy-policy-link" class="text-blue-400 hover:underline mx-2">প্রাইভেসি পলিসি</a>
-            <a href="#" class="text-blue-400 hover:underline mx-2">কমিউনিটি গাইডলাইনস</a>
-        </div>
-    </footer>
 
     <script>
         document.addEventListener('DOMContentLoaded', () => {
-            const diceValueDisplay = document.getElementById('dice-value');
-            const rollDiceButton = document.getElementById('roll-dice-button');
-            const pieceSelectionArea = document.getElementById('piece-selection-area');
-            const pieceSelectButtons = document.querySelectorAll('.ludo-piece-select-btn');
+            const appContent = document.getElementById('app-content');
             const privacyPolicyLink = document.getElementById('privacy-policy-link');
+            const communityGuidelinesLink = document.getElementById('community-guidelines-link');
 
-            let currentDiceRoll = 0;
             let freePlayTime = 0; // in seconds
             const FREE_PLAY_LIMIT = 30 * 60; // 30 minutes in seconds
             let gameTimerInterval;
 
-            // --- Ludo Game Logic ---
-            // Simplified Ludo game state (for one player, Red)
-            const ludoGameState = {
-                red: {
-                    pieces: [
-                        { id: 'red-1', position: 'home', isOut: false },
-                        { id: 'red-2', position: 'home', isOut: false },
-                        { id: 'red-3', position: 'home', isOut: false },
-                        { id: 'red-4', position: 'home', isOut: false }
-                    ],
-                    // A simple map of logical positions to grid-area or cell IDs
-                    // This is highly simplified. A real Ludo game would have a fixed path array.
-                    // For this basic demo, we'll just simulate movement.
-                    pathPositions: {} // To be mapped to visual positions
-                }
-            };
+            // --- Page Routing / Content Loading ---
+            function loadPage(pageName) {
+                appContent.innerHTML = ''; // Clear current content
+                let contentHTML = '';
 
-            // Basic path mapping (not a full Ludo path, just for demonstration)
-            // In a real game, you'd define all 52 path cells.
-            const ludoPath = [
-                // Red start path (simplified example)
-                { id: 'R1', gridArea: '7 / 2 / 8 / 3' }, // Red start
-                { id: 'R2', gridArea: '7 / 3 / 8 / 4' },
-                { id: 'R3', gridArea: '7 / 4 / 8 / 5' },
-                { id: 'R4', gridArea: '7 / 5 / 8 / 6' },
-                { id: 'R5', gridArea: '7 / 6 / 8 / 7' },
-                // Common path segment (example)
-                { id: 'C1', gridArea: '6 / 7 / 7 / 8' },
-                { id: 'C2', gridArea: '5 / 7 / 6 / 8' },
-                // ... more path cells would go here
-            ];
+                switch (pageName) {
+                    case 'home':
+                        contentHTML = `
+                            <!-- Profile Section -->
+                            <div class="bg-gray-800 p-6 rounded-lg shadow-lg text-center mb-10 w-full max-w-sm">
+                                <div id="profile-picture-placeholder" class="w-32 h-32 bg-gray-700 rounded-full mx-auto mb-4 flex items-center justify-center text-gray-400 text-lg">
+                                    <span class="text-center">Profile<br>Picture</span>
+                                </div>
+                                <h2 class="text-xl font-bold text-white mb-2">Your Name (Boss)</h2>
+                                <p class="text-md text-gray-400">Ready to play!</p>
+                            </div>
 
-            // Function to simulate dice roll
-            function rollDice() {
-                rollDiceButton.disabled = true;
-                diceValueDisplay.classList.add('dice-animation');
-                // Simulate rolling animation for a short duration
-                setTimeout(() => {
-                    currentDiceRoll = Math.floor(Math.random() * 6) + 1;
-                    diceValueDisplay.textContent = currentDiceRoll;
-                    diceValueDisplay.classList.remove('dice-animation');
-                    rollDiceButton.disabled = false;
+                            <!-- Game Windows Section (2x2 Grid) -->
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 w-full max-w-4xl mb-10">
+                                <!-- Ludo Window -->
+                                <div class="game-window" data-game="ludo">
+                                    <span class="text-3xl mb-2">🎲</span>
+                                    <h3 class="text-xl font-semibold">Ludo</h3>
+                                    <p class="text-sm text-gray-400">Play Now!</p>
+                                </div>
+                                <!-- Subway Runner Window -->
+                                <div class="game-window" data-game="subway-runner">
+                                    <span class="text-3xl mb-2">🏃‍♂️</span>
+                                    <h3 class="text-xl font-semibold">Subway Runner</h3>
+                                    <p class="text-sm text-gray-400">Coming Soon...</p>
+                                </div>
+                                <!-- Chess Window -->
+                                <div class="game-window" data-game="chess">
+                                    <span class="text-3xl mb-2">♟️</span>
+                                    <h3 class="text-xl font-semibold">Chess</h3>
+                                    <p class="text-sm text-gray-400">Coming Soon...</p>
+                                </div>
+                                <!-- Minecraft Prototype Window -->
+                                <div class="game-window" data-game="minecraft">
+                                    <span class="text-3xl mb-2">⛏️</span>
+                                    <h3 class="text-xl font-semibold">Minecraft Prototype</h3>
+                                    <p class="text-sm text-gray-400">Coming Soon...</p>
+                                </div>
+                            </div>
+                        `;
+                        // Attach event listeners for game windows
+                        appContent.innerHTML = contentHTML;
+                        document.querySelectorAll('.game-window').forEach(windowDiv => {
+                            windowDiv.addEventListener('click', () => {
+                                const gameName = windowDiv.dataset.game;
+                                if (gameName === 'ludo') {
+                                    loadPage('ludo');
+                                } else {
+                                    alert(`${gameName} is Coming Soon!`);
+                                }
+                            });
+                        });
+                        break;
 
-                    // Show piece selection if a piece can move
-                    if (currentDiceRoll === 6 || ludoGameState.red.pieces.some(p => p.isOut)) {
-                        pieceSelectionArea.classList.remove('hidden');
-                    } else {
-                        // If no 6 and no pieces out, turn ends (in real game)
-                        // For this demo, just hide selection
-                        pieceSelectionArea.classList.add('hidden');
-                    }
-                }, 1000); // 1 second animation
-            }
+                    case 'privacy-policy':
+                        contentHTML = `
+                            <div class="page-content bg-gray-800 p-8 rounded-lg shadow-xl text-left w-11/12 md:w-3/4 max-w-2xl relative">
+                                <h2 class="text-3xl font-bold text-blue-400 mb-4">Privacy Policy - CreativeGameworld</h2>
+                                <p class="mb-4">Welcome! At CreativeGameworld, we prioritize the privacy of your personal information.</p>
+                                <h3 class="text-xl font-semibold text-white mb-2">1. Data Collection</h3>
+                                <p class="mb-4">We do not collect any personal data on our platform. Your name, email address, phone number, or any other personally identifiable information is not required or stored by us.</p>
+                                <h3 class="text-xl font-semibold text-white mb-2">2. Cookies and Local Storage</h3>
+                                <p class="mb-4">We may use browser cookies or local storage to enhance website functionality and save your game progress (e.g., high scores). This information remains on your device and does not personally identify you.</p>
+                                <h3 class="text-xl font-semibold text-white mb-2">3. Third Parties</h3>
+                                <p class="mb-4">We do not share any of your information (if collected) with third parties.</p>
+                                <h3 class="text-xl font-semibold text-white mb-2">4. Changes</h3>
+                                <p class="mb-4">This Privacy Policy may be updated. In case of significant changes, we will notify you on the website.</p>
+                                <p class="text-sm text-gray-500 mt-6">Last Updated: June 2025</p>
+                                <div class="mt-8 text-right">
+                                    <a href="#" id="developer-mode-link" class="text-green-400 hover:underline font-bold text-lg">Developer Mode</a>
+                                </div>
+                                <button id="back-to-home-btn" class="ludo-button mt-6">Back to Home</button>
+                            </div>
+                        `;
+                        appContent.innerHTML = contentHTML;
+                        document.getElementById('back-to-home-btn').addEventListener('click', () => loadPage('home'));
+                        document.getElementById('developer-mode-link').addEventListener('click', (e) => {
+                            e.preventDefault();
+                            loadPage('developer-mode');
+                        });
+                        break;
 
-            // Function to handle piece movement (simplified)
-            function movePiece(pieceId) {
-                // In a real Ludo game:
-                // 1. Validate if the piece can actually move 'currentDiceRoll' steps.
-                // 2. Handle knocking out opponents, safe spots, star spots.
-                // 3. Update the piece's visual position.
-                // 4. Update game state.
+                    case 'developer-mode':
+                        contentHTML = `
+                            <div class="page-content bg-gray-800 p-8 rounded-lg shadow-xl text-center max-w-md relative">
+                                <h2 class="text-2xl font-bold text-white mb-4">Developer Mode Access</h2>
+                                <p class="text-md text-gray-300 mb-4">Enter Secret Code:</p>
+                                <input type="password" id="secret-code-input" class="w-full p-3 rounded-md bg-gray-700 text-white border border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500 mb-4">
+                                <button id="submit-secret-code" class="ludo-button">Submit</button>
+                                <p id="dev-mode-message" class="text-red-400 mt-2"></p>
+                                <button id="back-to-privacy-btn" class="ludo-button mt-6">Back to Privacy Policy</button>
+                            </div>
+                        `;
+                        appContent.innerHTML = contentHTML;
+                        document.getElementById('back-to-privacy-btn').addEventListener('click', () => loadPage('privacy-policy'));
+                        document.getElementById('submit-secret-code').addEventListener('click', () => {
+                            const secretCodeInput = document.getElementById('secret-code-input');
+                            const messageDisplay = document.getElementById('dev-mode-message');
+                            const SECRET_CODE = "Jai Radhe Krishna 108";
 
-                console.log(`${pieceId} ${currentDiceRoll} ঘর চলবে।`);
-                alert(`${pieceId} ${currentDiceRoll} ঘর চলবে। (এটি একটি সিমুলেশন)`); // Use alert for simplicity in this demo
+                            if (secretCodeInput.value === SECRET_CODE) {
+                                messageDisplay.textContent = 'Success! Redirecting to Website Design page...';
+                                messageDisplay.classList.remove('text-red-400');
+                                messageDisplay.classList.add('text-green-400');
+                                setTimeout(() => {
+                                    alert('Website Design Page Loading... (This is a placeholder UI)');
+                                    loadPage('home'); // Go back to home after simulating
+                                }, 1000);
+                            } else {
+                                messageDisplay.textContent = 'Incorrect Code! Please try again.';
+                                messageDisplay.classList.remove('text-green-400');
+                                messageDisplay.classList.add('text-red-400');
+                            }
+                        });
+                        break;
 
-                const piece = ludoGameState.red.pieces.find(p => p.id === pieceId);
-                if (piece) {
-                    if (piece.position === 'home' && currentDiceRoll === 6) {
-                        piece.isOut = true;
-                        piece.position = 'R1'; // Move to red start
-                        console.log(`${pieceId} ঘর থেকে বেরিয়েছে এবং R1 এ গেছে।`);
-                        // Visually move the piece (requires creating piece elements and manipulating their CSS)
-                        // For this demo, we'll just log.
-                    } else if (piece.isOut) {
-                        // Simulate moving along the path
-                        // This would require a proper path array and index tracking
-                        console.log(`${pieceId} ${currentDiceRoll} ঘর এগিয়ে যাবে।`);
-                    } else {
-                        console.log('এই গুটি সরানো যাবে না।');
-                    }
-                }
+                    case 'ludo':
+                        contentHTML = `
+                            <div class="page-content bg-gray-800 p-8 rounded-lg shadow-xl w-full max-w-4xl flex flex-col items-center mb-10">
+                                <h2 class="text-3xl font-bold text-white mb-6">Play Ludo!</h2>
+                                <div class="ludo-board">
+                                    <!-- Dynamic Ludo cells and pieces will be generated by JavaScript -->
+                                </div>
 
-                pieceSelectionArea.classList.add('hidden'); // Hide selection after move
-                currentDiceRoll = 0; // Reset dice
-                diceValueDisplay.textContent = '১'; // Reset display
-            }
+                                <!-- Dice Roll and Piece Selection -->
+                                <div class="flex flex-col items-center mt-6">
+                                    <div class="dice-display text-white mb-4">
+                                        <span id="dice-value">1</span>
+                                    </div>
+                                    <button id="roll-dice-button" class="ludo-button text-xl">
+                                        <span class="mr-2">⚪</span> Roll Dice
+                                    </button>
 
-            // Event Listeners for Ludo
-            rollDiceButton.addEventListener('click', rollDice);
-            pieceSelectButtons.forEach(button => {
-                button.addEventListener('click', (event) => {
-                    const pieceId = event.target.dataset.piece;
-                    movePiece(pieceId);
-                });
-            });
-
-            // --- Game Time Limit Logic ---
-            function startTimer() {
-                gameTimerInterval = setInterval(() => {
-                    freePlayTime++;
-                    if (freePlayTime >= FREE_PLAY_LIMIT) {
-                        showTimeReminder();
-                        clearInterval(gameTimerInterval); // Stop timer after reminder
-                    }
-                }, 1000); // Every second
-            }
-
-            function showTimeReminder() {
-                // Using a custom modal/div instead of alert() as per instructions
-                const reminderDiv = document.createElement('div');
-                reminderDiv.innerHTML = `
-                    <div class="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50">
-                        <div class="bg-gray-800 p-8 rounded-lg shadow-xl text-center">
-                            <p class="text-xl font-bold text-white mb-4">সময় সীমা অতিক্রম করেছেন!</p>
-                            <p class="text-lg text-gray-300 mb-6">আপনি ৩০ মিনিটের ফ্রি খেলার সীমা অতিক্রম করেছেন। আপনি খেলা চালিয়ে যেতে পারেন, তবে এটি শুধুমাত্র একটি রিমাইন্ডার।</p>
-                            <button id="close-reminder" class="ludo-button">ঠিক আছে</button>
-                        </div>
-                    </div>
-                `;
-                document.body.appendChild(reminderDiv);
-
-                document.getElementById('close-reminder').addEventListener('click', () => {
-                    reminderDiv.remove();
-                    // Optionally, restart the timer if the user continues playing
-                    // For this demo, we stop it after the first reminder.
-                });
-            }
-
-            // Start timer when page loads (simulating game start)
-            startTimer();
-
-
-            // --- Privacy Policy & Developer Mode ---
-            privacyPolicyLink.addEventListener('click', (e) => {
-                e.preventDefault();
-                // Instead of navigating, we'll simulate the privacy policy content.
-                // In a real app, this would be a separate HTML page or a router.
-
-                const privacyContent = `
-                    <div class="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50 overflow-y-auto">
-                        <div class="bg-gray-800 p-8 rounded-lg shadow-xl text-left w-11/12 md:w-3/4 max-w-2xl relative">
-                            <button id="close-privacy" class="absolute top-4 right-4 text-gray-400 hover:text-white text-3xl font-bold">&times;</button>
-                            <h2 class="text-3xl font-bold text-blue-400 mb-4">প্রাইভেসি পলিসি - CreativeGameworld</h2>
-                            <p class="mb-4">স্বাগতম! CreativeGameworld প্ল্যাটফর্মে আমরা আপনার ব্যক্তিগত তথ্যের গোপনীয়তাকে সর্বোচ্চ গুরুত্ব দিই।</p>
-                            <h3 class="text-xl font-semibold text-white mb-2">১. ডেটা সংগ্রহ</h3>
-                            <p class="mb-4">আমাদের প্ল্যাটফর্মে আ
+                                    <div id="piece-selection-area" class="mt-8 flex flex-wrap justify-center gap-
